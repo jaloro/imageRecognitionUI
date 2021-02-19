@@ -1,11 +1,3 @@
-/* @font-face{
-	font-family: 'Press Start 2P';
-	src:url('../fonts/PressStart2P-1.woff');
-} */
-/* @font-face {
-	font-family: 'Pixeboy';
-	src:url('../fonts/Pixeboy.ttf');
-} */
 @font-face {
 	font-family: 'SG09';
 	src:url('../fonts/SG09.ttf');
@@ -21,23 +13,23 @@ table {	border-color: red; }
 
 .objectBox{
 	border: 1px dashed #ffff00;
-	background-color: #00000033;
+	background-color: #00000077;
 	font-size: 100%;
 	position: absolute;
 	padding-left: 5px;
 	text-align: left;
-	opacity: 0.5;
+	opacity: 0.6;
 }
 .objectID {
-	color: #999999;
+	color: #dddddd;
 }
 .objectValue {
-	color: #00bb00;
+	color: #00ff00;
 }
 .objectItem {
 	white-space: nowrap;
 	/* display: none; */
-	opacity: 0.4;
+	opacity: 0.6;
 }
 
 .objectBox:hover {
@@ -65,12 +57,20 @@ table {	border-color: red; }
 	opacity: 1;
 }
 
-/* .objectBox:hover > p{
-	border:1px solid #ffff00aa;
-} */
+#alertMsg{
+	display: none;
+	width: 300px;
+	height: 30px;
+	position: relative;
+	margin: 0 auto;
+	padding: 0;
+	top: 50%;
+	transform: translateY(-50%);
+	background-color: #0000dd77;
+}
 
 /* 以下用于图片尺寸设定 以及（水平＆垂直）居中 */
-/* #imagePre {
+#imagePre {
 	max-width: 500px; max-height: 500px;
 	position: absolute;
 	top: 0;
@@ -78,4 +78,4 @@ table {	border-color: red; }
 	bottom: 0;
 	left: 0;
 	margin: auto;
-} */
+}

@@ -16,19 +16,12 @@ function start( a_ini ){
 			picNameLabelColor:"color: #00ffff;",
 			selectedImgName:"- No image were seleted -",
 			picSizeLimit:1024,
-			picWidth:0,
-			picHeight:0,
+			picOrgWidth:1,
+			picOrgHeight:1,
 			picScale:1,
-			praseRtn: {
-				"filename":"dog.jpg",
-				"objects":[
-					{"class_id":7,"confidence":92.3,"name":"truck","relative_coordinates":{"x":0,"y":160,"width":380,"height":283}},
-					{"class_id":58,"confidence":32.5,"name":"people-face","relative_coordinates":{"x":30,"y":230,"width":70,"height":70}},
-					{"class_id":16,"confidence":97.9,"name":"dog","relative_coordinates":{"x":140,"y":180,"width":150,"height":132}},
-					{"class_id":1,"confidence":92.3,"name":"bicycle","relative_coordinates":{"x":460,"y":75,"width":40,"height":110}}
-				],
-				"frame_id":1
-			},
+			picCrtWidth:1,
+			picCrtHeight:1,
+			parseRtn: {},
 			parseRes:	'<span class="objectBox" style="left: 160px; top: 200px; width: 150px; height: 132px; z-index: 2;" title="17(95.2%)">\
 							<span class="objectID">id:</span> <span class="objectValue">17</span><br/><span class="objectID">P:</span> <span class="objectValue">95.2%</span>\
 						</span>'
@@ -37,42 +30,45 @@ function start( a_ini ){
 			selectImage:function( e ){	// 选择本地图片并加载预览
 				_picFile = e.target.files[0];
 				if (!_picFile) return;
-				// TODO: 判断 canvas 是否兼容有效
-				/*
-				var _canvas = this.$refs.canvasPic;
-				if ( _canvas.getContext ){
-					var _content = _canvas.getContext("2d");
-				}
-				*/
 				var reader = new FileReader();
 				reader.onload = () => {	//reader.onload = (evt)=>{	//此处evt可省略，因为 evt.result 即 reader;  todo? 此处用 function 替代 => 无法正确执行？？？可能是因为 this 指向问题，在箭头函数中，this指向正确的vue对象
-					this.selectedImgSrc = reader.result;
 					this.selectedImgName = _picFile.name;
-					var _canvas = this.$refs.canvasPic;
-					var _content = _canvas.getContext("2d");
-					var _img = new Image();
-					_img.onload = () => {		// 图片加载完毕事件
-						// console.log( _img.width, _img.height );
-						// TODO: 判断是否超过了尺寸限制
-						this.picWidth = _img.width;
-						this.picHeight = _img.height;
-						if ( this.picWidth > this.picHeight ){	// 横向图
-							if ( this.picWidth > 500 ){
-								_img.height = this.picHeight / this.picWidth * 500;
-								_img.width = 500;
-							}
-						} else {	// 纵向图
-							if ( this.picHeight > 500 ){
-								_img.width = this.picWidth / this.picHeight * 500;
-								_img.height = 500;
+					var _imgOrg = new Image();		// 记录图片原始尺寸
+					_imgOrg.onload = () => {		// 图片加载完毕事件
+						// TODO: 判断是否超过了尺寸限制	// console.log( _imgOrg.width, _imgOrg.height );
+						this.picOrgWidth = _imgOrg.width;
+						this.picOrgHeight = _imgOrg.height;
+						
+						var _img = this.$refs.imagePre;
+						_img.onload = () => {		// 图片加载完毕事件
+							this.picCrtWidth = _img.width;
+							this.picCrtHeight = _img.height;
+							this.picScale = this.picCrtWidth / this.picOrgWidth;
+							{
+								// // 测试画框代码
+								// console.log( _img.width, _img.height, this.picScale );
+								// var testData = {
+								// 	"filename":"dog.jpg",
+								// 	"objects":[
+								// 		{"class_id":58,"confidence":32.5,"name":"people-face","relative_coordinates":{"center_x":0.130001,"center_y":0.682989,"width":0.140001,"height":0.180412}},
+								// 		{"class_id":16,"confidence":97.9,"name":"dog","relative_coordinates":{"center_x":0.430001,"center_y":0.634021,"width":0.300001,"height":0.340206}},
+								// 		{"class_id":1,"confidence":92.3,"name":"bicycle","relative_coordinates":{"center_x":0.960001,"center_y":0.335051,"width":0.080001,"height":0.283505}}
+								// 	],
+								// 	"frame_id":1
+								// };
+								// for ( var i = 0; i < testData["objects"].length; i ++ )
+								// {
+								// 	testData["objects"][ i ]["relative_coordinates"]["b_x"] = testData["objects"][ i ]["relative_coordinates"]["center_x"] * this.picCrtWidth - ( testData["objects"][ i ]["relative_coordinates"]["width"] * this.picCrtWidth * 0.5 );
+								// 	testData["objects"][ i ]["relative_coordinates"]["b_y"] = testData["objects"][ i ]["relative_coordinates"]["center_y"] * this.picCrtHeight - ( testData["objects"][ i ]["relative_coordinates"]["height"] * this.picCrtHeight * 0.5 );
+								// 	testData["objects"][ i ]["relative_coordinates"]["b_width"] = testData["objects"][ i ]["relative_coordinates"]["width"] * this.picCrtWidth;
+								// 	testData["objects"][ i ]["relative_coordinates"]["b_height"] = testData["objects"][ i ]["relative_coordinates"]["height"] * this.picCrtHeight;
+								// }
+								// this.parseRtn = testData;
 							}
 						}
-						this.picScale = _img.width / this.picWidth;
-						console.log("图片缩放比: " + this.picScale);
-						_canvas.height = _canvas.height;	// 清空canvas
-						_content.drawImage( _img, (500-_img.width)*0.5, (500-_img.height)*0.5, _img.width, _img.height);
+						this.selectedImgSrc = reader.result;	// 加载预览图片, 加载完成时触发 onload 事件
 					}
-					_img.src = reader.result;		// 开始加载图片,等同于 e.target.result; 加载结束时触发绘制图像到canvas上的代码
+					_imgOrg.src = reader.result;		// 加载原尺寸图片, 加载完成时触发 onload 事件
 				}
 				reader.readAsDataURL( _picFile );	// 读取本地图片数据，可用于form上传
 			},
@@ -81,12 +77,22 @@ function start( a_ini ){
 				var formData = new FormData();
 				formData.append( 'file', _picFile );
 				axios.post( ini["imgRecognitionSvrUrl"], formData ).then(
-					( res ) => {	//console.log( res.status ); console.log( res.data );
-						// res.data["object"][0]["relative_coordinates"]["center_x"]
-						console.log( res.data );
-						this.praseRtn = {};
+					( res ) => {		// console.log( res.status ); console.log( res.data );
+						if ( res.data["objects"].length < 1 ) {
+							// alert( "Nothing was identified !" );
+							this.$refs.alertMsg.style.display = "block";
+							return;
+						} else this.$refs.alertMsg.style.display = "none";
+						for ( var i = 0; i < res.data["objects"].length; i ++ )
+						{
+							res.data["objects"][ i ]["relative_coordinates"]["b_x"] = res.data["objects"][ i ]["relative_coordinates"]["center_x"] * this.picCrtWidth - ( res.data["objects"][ i ]["relative_coordinates"]["width"] * this.picCrtWidth * 0.5 );
+							res.data["objects"][ i ]["relative_coordinates"]["b_y"] = res.data["objects"][ i ]["relative_coordinates"]["center_y"] * this.picCrtHeight - ( res.data["objects"][ i ]["relative_coordinates"]["height"] * this.picCrtHeight * 0.5 );
+							res.data["objects"][ i ]["relative_coordinates"]["b_width"] = res.data["objects"][ i ]["relative_coordinates"]["width"] * this.picCrtWidth;
+							res.data["objects"][ i ]["relative_coordinates"]["b_height"] = res.data["objects"][ i ]["relative_coordinates"]["height"] * this.picCrtHeight;
+						}
+						this.parseRtn = res.data;
 					},
-					( err ) => {	// 注：使用箭头函数可以避免 this 指向转移的问题，如果不使用箭头函数，则 this 需要事先保存到如 that 的变量中
+					( err ) => {		// 注：使用箭头函数可以避免 this 指向转移的问题，如果不使用箭头函数，则 this 需要事先保存到如 that 的变量中
 						console.log( err.request.status, err.request.statusText )
 					}
 				);
@@ -98,9 +104,10 @@ function start( a_ini ){
 	});
 }
 
-function toPercent( num, point ){	// 小数转百分比函数
-	if (point==0) { return "0%"; }
-	return Number( num * 100 ).toFixed( point ) + "%";
+function toPercent( num, point = 0 ){	// 小数转百分比函数
+	if ( typeof( num ) != "number" ) return 0;
+	if ( typeof( point ) != "number" ) return 0;
+	return Number( num * 100 ).toFixed( point );
 }
 
 function startFail( a_err ){

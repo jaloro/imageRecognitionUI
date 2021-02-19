@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<link rel="stylesheet" type="text/css" href="./node_modules/nes.css/css/nes.css">
+		<link rel="stylesheet" type="text/css" href="./css/imageRecognitionDemoWithCanvas.css"/>
+		<title>Image Recognition AI (Demo)</title>
+	</head>
+	<body>
+		<div id="app" style="height: 100%;">
+			<table border="0" cellspacing="" cellpadding="10" width="100%" height="100%">
+				<tr>
+					<td width="3%" style="background-color: #000000;"></td>
+					<td id="标题栏区域" width="35.2%" height="70px" style="padding: 0;">
+						<div style="position: relative; width: 100%; height: 100%; margin: 0px auto; padding: 0px;">
+							<span style="position: absolute; left: 20px; top: 10px; font-size: 150%; font-weight: 600; color: #222222;">Image Recognition AI (Demo)</span>
+							<span style="position: absolute; left: 20px; top: 40px; font-style: italic; color: #333333;">--- Seepools Inc.</span>
+						</div>
+					</td>
+					<td style="background-color: #000000;"></td>
+				</tr>
+				<tr>
+					<td style="background-color: #000000;"></td>
+					<td>
+						<div id="按钮区域" style="width: 90%; text-align:right;">
+							<!-- <label class="nes-btn" title="选择要识别的图片" @mouseover="btnMouseOver($event)" @mouseleave="btnMouseLeave($event)"> -->
+							<label class="nes-btn" title="选择要识别的图片" onMouseOut="this.className='nes-btn'" onMouseOver="this.className='nes-btn is-primary'">
+								<span style="font-weight: 600;">Select Pic</span>
+								<input type="file" ref="btnSelPic" @change="selectImage($event)" accept="image/*,image/jpg,image/jpeg,image/gif,image/png">
+							</label><br/><br/>
+							<!-- <button type="button" class="nes-btn" title="上传图片并识别" @mouseover="btnMouseOver($event)" @mouseleave="btnMouseLeave($event)" @click="uploadImage()" style="font-weight: 600;">Upload Pic</button><br/><br/> -->
+							<button type="button" class="nes-btn" title="上传图片并识别" onMouseOut="this.className='nes-btn'" onMouseOver="this.className='nes-btn is-primary'" @click="uploadImage()" style="font-weight: 600;">Upload Pic</button><br/><br/>
+							<span style="color: #ee0000;">The picture size should not be larger than 512*512.</span>
+						</div>
+						<br/><br/>
+					</td>
+					<td id="图片预览区域" align="center" style="background-color: #000000;">
+						<div id="图片框中央定位容器" style="position: relative; width:550px; height:550px; margin: 0; padding: 0; background-color: #ffff00;"><!-- @click="clickImage()"  -->
+							<div class="nes-container is-dark with-title is-rounded is-centered" style="position: absolute; width:550px; height:550px; margin: 0; padding: 0; background-color: #000000; z-index: 1;">
+								<p class="title">&nbsp< Picture Preview >&nbsp</p>
+								<!-- <p>Good morning. Thou hast had a good night's sleep, I hope... What's my breakfast</p> -->
+								<canvas ref="canvasPic" width="500px" height="500px" style="background-color: #000000;">
+									The browser version you are currently using is too low to display the canvas image! Please upgrade your browser or use another browser that supports canvas.
+								</canvas>
+								<!-- <img id="imagePre" ref="imagePre" :src="selectedImgSrc" ></img> -->
+							</div>
+							<!-- 重叠用于画框的DIV容器，两个兄弟容器为absolute定位，父对象需要非static定位 -->
+							<div class="nes-container is-dark with-title is-rounded is-centered" style="position: absolute; width:550px; height:550px; margin: 0; padding: 0; background-color: #ffff0000; z-index: 5;">
+								<p class="title" style="height: 25px; color: #00ff00bb; background-color: #000000;">&nbsp< Picture Preview >&nbsp</p>
+								<div id="画框容器" ref="objectsBox" style="position: relative; width:500px; height:500px; margin: 0 auto; padding: 0; background-color: #00ffff00;"><!-- 通过 margin: 0 auto; 实现水平居中 --><!-- v-html="parseRes" -->
+									<!-- 此处放置识别框 -->
+									<span class="objectBox" v-for="(item, index) in praseRtn.objects" :style="'left:' + item.relative_coordinates.b_x + 'px; top:' + item.relative_coordinates.b_y + 'px; width:' + item.relative_coordinates.b_width + 'px; height:' + item.relative_coordinates.b_height + 'px; z-index: ' + index + ';'">
+										<span class="objectItem"><span class="objectID">id:</span> <span class="objectValue">{{item.name}}</span></span><br/>
+										<span class="objectItem"><span class="objectID">cfds:</span> <span class="objectValue">{{item.confidence}}</span></span><br/>
+									</span>
+									<div id="alertMsg" ref="alertMsg">
+										<span id="" style="color: #FF0000; line-height: 30px;" >Nothing was identified !</span>
+									</div>
+								</div>
+							</div>
+						</div>
+						<span id="picFileName" :style="picNameLabelColor" >{{selectedImgName}}</span>
+						<br/>
+					</td>
+				</tr>
+				<tr>
+					<td style="background-color: #000000;"></td>
+					<td id="底部栏区域" height="40">
+						<div id="bottomBar">
+							<span style="color: #555555; font-weight: 600; left: 100px; margin: auto;">Terms - Privacy - Security - Docs</span>
+						</div>
+					</td>
+					<td id="版权信息栏" style="background-color: #000000;">
+						<div id="copyright" align="right">
+							<span style="color: #999999; font-weight: 600; right: 20px;">© 2021 Seepools Inc All Rights Reserved. @hideous</span>
+						</div>
+					</td>
+				</tr>
+			</table>
+		</div>
+		<script src="./node_modules/vue/dist/vue.js"></script>
+		<script src="./node_modules/axios/dist/axios.js"></script><!-- <script src="https://unpkg.com/axios/dist/axios.min.js"></script> -->
+		<script type="text/javascript" src="./js/imageRecognitionDemoWithCanvas.js"></script>
+	</body>
+</html>

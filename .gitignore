@@ -43,6 +43,10 @@ jspm_packages/
 imgs/
 bak/
 
+# Zip File By hideous
+*.zip
+*.rar
+
 # TypeScript v1 declaration files
 typings/
 
