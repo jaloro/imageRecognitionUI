@@ -45,7 +45,7 @@
 								<!-- <img id="imagePre" ref="imagePre" :src="selectedImgSrc" ></img> -->
 							</div>
 							<!-- 重叠用于画框的DIV容器，两个兄弟容器为absolute定位，父对象需要非static定位 -->
-							<div class="nes-container is-dark with-title is-rounded is-centered" style="position: absolute; width:550px; height:550px; margin: 0; padding: 0; background-color: #ffff0000; z-index: 5;">
+							<div class="nes-container is-dark with-title is-rounded is-centered" style="position: absolute; width:550px; height:550px; margin: 0; padding: 0; background-color: #00ffff00; z-index: 5;">
 								<p class="title" style="height: 25px; color: #00ff00bb; background-color: #000000;">&nbsp< Picture Preview >&nbsp</p>
 								<div id="画框容器" ref="objectsBox" style="position: relative; width:500px; height:500px; margin: 0 auto; padding: 0; background-color: #00ffff00;"><!-- 通过 margin: 0 auto; 实现水平居中 --><!-- v-html="parseRes" -->
 									<!-- 此处放置识别框 -->
@@ -77,6 +77,9 @@
 					</td>
 				</tr>
 			</table>
+			<div id="waitingBox" ref="waitingBox" style="display: none; position: absolute; top: 0; border: 2px solid #006666; background-color: #55555599; width: 100%; height: 100%; z-index: 99;">
+				<img src="imgs/loading.gif" style="width: 50px; height: 50px; position: absolute; top: 0; right: 0; bottom: 0; left: 0; margin: auto;">
+			</div>
 		</div>
 		<script src="./node_modules/vue/dist/vue.js"></script>
 		<script src="./node_modules/axios/dist/axios.js"></script><!-- <script src="https://unpkg.com/axios/dist/axios.min.js"></script> -->
