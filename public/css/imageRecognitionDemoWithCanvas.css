@@ -57,7 +57,7 @@ table {	border-color: red; }
 	opacity: 1;
 }
 
-#alertMsg{
+#alertMsg {
 	display: none;
 	width: 300px;
 	height: 30px;

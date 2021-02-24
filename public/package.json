@@ -1,0 +1,16 @@
+{
+  "name": "public",
+  "version": "1.0.0",
+  "description": "Image Recognition Demo - Static Pages",
+  "main": "imageRecognitionDemoWithCanvas.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Hideous",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.21.1",
+    "nes.css": "^2.3.0",
+    "vue": "^2.6.12"
+  }
+}

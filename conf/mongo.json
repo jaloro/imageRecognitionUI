@@ -1,0 +1,6 @@
+{
+    "mongoSessionUrl" : "mongodb+srv://xoSession:r3alMart@dawn.53gmf.mongodb.net/sessions",
+    "liveSessionDB" : "sessions",
+    "liveSessionCollection" : "LiveSessions",
+    "mainCollection" : "Results"
+}
