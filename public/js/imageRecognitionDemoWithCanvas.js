@@ -70,6 +70,7 @@ function start( a_ini ){
 					_img.src = this.selectedImgSrc;		// 加载图片, 加载完成时触发 onload 事件
 				}
 				this.$refs.waitingBox.style.display = "block";
+				this.$refs.alertMsg.style.display = "none";
 				reader.readAsDataURL( _picFile );		// 读取本地图片数据，用于 FormData 上传
 			},
 			uploadImage:function(){		// 上传图片
