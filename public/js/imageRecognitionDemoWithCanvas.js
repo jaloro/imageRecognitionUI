@@ -38,6 +38,8 @@ function start( a_ini ){
 				}
 				_picFile = e.target.files[0];
 				if (!_picFile) return;
+				this.$refs.waitingBox.style.display = "block";
+				this.$refs.alertMsg.style.display = "none";
 				var reader = new FileReader();
 				reader.onload = () => {	//reader.onload = (e)=>{	//此处e可省略，因为 e.result 即 reader;  todo? 此处用 function 替代 => 无法正确执行？？？可能是因为 this 指向问题，在箭头函数中，this指向正确的vue对象
 					this.selectedImgSrc = reader.result;	// 等同于使用 e 参数时的： e.target.result;
@@ -69,8 +71,6 @@ function start( a_ini ){
 					}
 					_img.src = this.selectedImgSrc;		// 加载图片, 加载完成时触发 onload 事件
 				}
-				this.$refs.waitingBox.style.display = "block";
-				this.$refs.alertMsg.style.display = "none";
 				reader.readAsDataURL( _picFile );		// 读取本地图片数据，用于 FormData 上传
 			},
 			uploadImage:function(){		// 上传图片
@@ -95,6 +95,7 @@ function start( a_ini ){
 			},
 			parseRes:function( a_resData = null ){		// 解析返回值
 				if ( !a_resData ) {
+					console.log( "\t本地模拟数据" )
 					a_resData = {
 						"filename":"dog.jpg",
 						"objects":[
@@ -117,6 +118,8 @@ function start( a_ini ){
 					a_resData["objects"][ i ]["relative_coordinates"]["b_y"] = a_resData["objects"][ i ]["relative_coordinates"]["center_y"] * this.picCrtHeight - ( a_resData["objects"][ i ]["relative_coordinates"]["height"] * this.picCrtHeight * 0.5 ) + ( 500 - this.picCrtHeight ) * 0.5;
 					a_resData["objects"][ i ]["relative_coordinates"]["b_width"] = a_resData["objects"][ i ]["relative_coordinates"]["width"] * this.picCrtWidth;
 					a_resData["objects"][ i ]["relative_coordinates"]["b_height"] = a_resData["objects"][ i ]["relative_coordinates"]["height"] * this.picCrtHeight;
+					a_resData["objects"][ i ]["confidence_s"] = toPercent( a_resData["objects"][ i ]["confidence"], 1 );
+					// console.log( toPercent( a_resData["objects"][ i ]["confidence"], 1 ) );
 				}
 				this.praseRtn = a_resData;
 				this.$refs.waitingBox.style.display = "none";

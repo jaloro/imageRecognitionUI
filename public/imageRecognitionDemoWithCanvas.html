@@ -4,6 +4,8 @@
 		<meta charset="utf-8">
 		<link rel="stylesheet" type="text/css" href="./node_modules/nes.css/css/nes.css">
 		<link rel="stylesheet" type="text/css" href="./css/imageRecognitionDemoWithCanvas.css"/>
+		<!-- <link rel="icon" href="./imgs/favicon.ico" type="image/x-icon" /> -->
+		<link rel="icon" sizes="32x32" type="image/png" href="./imgs/trees_x32.png">
 		<title>Image Recognition AI (Demo)</title>
 	</head>
 	<body>
@@ -51,7 +53,7 @@
 									<!-- 此处放置识别框 -->
 									<span class="objectBox" v-for="(item, index) in praseRtn.objects" :style="'left:' + item.relative_coordinates.b_x + 'px; top:' + item.relative_coordinates.b_y + 'px; width:' + item.relative_coordinates.b_width + 'px; height:' + item.relative_coordinates.b_height + 'px; z-index: ' + index + ';'">
 										<span class="objectItem"><span class="objectID">id:</span> <span class="objectValue">{{item.name}}</span></span><br/>
-										<span class="objectItem"><span class="objectID">cfds:</span> <span class="objectValue">{{item.confidence}}</span></span><br/>
+										<span class="objectItem"><span class="objectID">cfds:</span> <span class="objectValue">{{item.confidence_s}}%</span></span><br/>
 									</span>
 									<div id="alertMsg" ref="alertMsg">
 										<span id="" style="color: #FF0000; line-height: 30px;" >Nothing was identified !</span>
@@ -77,8 +79,11 @@
 					</td>
 				</tr>
 			</table>
-			<div id="waitingBox" ref="waitingBox" style="display: none; position: absolute; top: 0; border: 2px solid #006666; background-color: #55555599; width: 100%; height: 100%; z-index: 99;">
-				<img src="imgs/loading.gif" style="width: 50px; height: 50px; position: absolute; top: 0; right: 0; bottom: 0; left: 0; margin: auto;">
+			<div id="waitingBox" ref="waitingBox" style="display: none; position:absolute; top: 0; border: 5px dashed #ff990055; background-color: #000000ee; width: 100%; height: 100%; z-index: 99;">
+				<div>
+					<img src="imgs/loading.gif" style="width: 50px; height: 50px; position: absolute; top: 0; right: 0; bottom: 0; left: 0; margin: auto;">
+					<span style="text-align: center; color: #00ff00; position: absolute; width: 400px; height:40px; top: 110px; right: 0; bottom: 0; left: 0; margin: auto;">Identification in progress, please wait...</span>
+				</div>
 			</div>
 		</div>
 		<script src="./node_modules/vue/dist/vue.js"></script>

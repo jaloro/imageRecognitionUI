@@ -1,10 +1,13 @@
 {
-	"silence":false,
+	"debug":true,
+	"corsOption":"*",
 	"showResponse":true,
+	"static":"/public",
 	"serverRoute":"/PostImage",
-	"imgsDir":"./imgsTemp/",
-	"proxyHost":"34.94.243.224",
-	"proxyPort":8080,
+	"imgsDir":"/imgsTemp",
+	"bak":{ "proxyHostBak":"34.94.243.224", "proxyPortBak":8080 },
+	"proxyHost":"192.168.3.22",
+	"proxyPort":8888,
 	"proxyRoute":"/PostImage/PostImage",
-	"corsOption":"*"
+	"imgNumLmt":0
 }

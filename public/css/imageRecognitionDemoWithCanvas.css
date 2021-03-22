@@ -2,6 +2,10 @@
 	font-family: 'SG09';
 	src:url('../fonts/SG09.ttf');
 }
+@font-face {
+	font-family: 'Pixeboy';
+	src:url('../fonts/Pixeboy.ttf');
+}
 
 html,body {
 	width: 100%; height: 100%;
@@ -24,7 +28,7 @@ table {	border-color: red; }
 	color: #dddddd;
 }
 .objectValue {
-	color: #00ff00;
+	color: #00ff0099;
 }
 .objectItem {
 	white-space: nowrap;
