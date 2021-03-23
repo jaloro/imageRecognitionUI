@@ -106,7 +106,7 @@ function start( a_ini ){
 						"frame_id":1
 					};
 				}
-				if ( a_resData["objects"].length < 1 ) {
+				if ( !a_resData["objects"] || a_resData["objects"].length < 1 ) {
 					// alert( "Nothing was identified" );
 					this.$refs.alertMsg.style.display = "block";
 					this.$refs.waitingBox.style.display = "none";

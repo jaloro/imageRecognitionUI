@@ -60,15 +60,22 @@ function getExtByMimeType( a_mimetype = "" ) {
 async function convertToJpg ( a_inFile, a_outFile, a_quality = 75 ) {
 	return new Promise( ( resolve, reject ) => {
 		let _outputStream = fs.createWriteStream( a_outFile );					// 建立转换写入流， *注：写入流没有监测到 end 事件，需要监测 close 事件
-		_outputStream.on( 'close', () => { resolve( { success: true } ); } );					// finish 事件先于 close 事件发生
-		fs.createReadStream( a_inFile ).on( 'error', ( e ) => { if ( e ) { reject( e ); } } ).pipe( sharp().jpeg( { quality: a_quality } ) ).on( 'error', ( e ) => { if ( e ) { reject( e ); } } ).pipe( _outputStream ).on( 'error', ( e ) => { if ( e ) { reject( e ); } } ); 			// *注：读取流可以监测到 end 和 close 事件；写入流没有监测到 end 事件，只能监测 close 事件
+		_outputStream.on( 'close', () => {
+			console.log( "\tConversion of image to 'JPG' format succeeded.".bGreen );
+			resolve( { success: true } );
+		});					// finish 事件先于 close 事件发生
+		fs.createReadStream( a_inFile ).on( 'error', ( e ) => { if ( e ) { handlePipeError( e, "\t3.1 ..." ), reject( e ); } } ).pipe( sharp().jpeg( { quality: a_quality } ) ).on( 'error', ( e ) => { if ( e ) { reject( e ); } } ).pipe( _outputStream ).on( 'error', ( e ) => { if ( e ) { handlePipeError( e, "\t3.2 ..." ), reject( e ); } } ); 			// *注：读取流可以监测到 end 和 close 事件；写入流没有监测到 end 事件，只能监测 close 事件
 	});
 };
 
 // 管道错误处理函数 ------------------------------------------ < Function >
 function handlePipeError( err, a_msg = "" ) {
 	console.log( err );
-	console.log( a_msg );
+	console.log( a_msg.error );
+	if ( rl ) {
+		rl.setPrompt( defaultPrompt );
+		rl.prompt();
+	}
 }
 
 // async function proxy( fastify, options, next ) {
@@ -105,7 +112,7 @@ module.exports = async function ( fastify, options, next ) {
 					// funcs.printObject( _file, 0, "\t" );
 					console.log( "\t- " + "<file> ".cyan + _part.fieldname.underline + ": " + _part.filename.green );
 					if ( _part.filename == '' ) {								// 处理空文件型参数
-						await _part.file.on( 'error', ( e ) => { handlePipeError( e, "pipe @empty file in parts" ) } ).pipe( fs.createWriteStream( _file[ "orgPathName" ] ) ).on( 'error', ( e ) => { handlePipeError( e, "pipe empty @saveing..." ) } );			// 把POST中的图像数据保存到文件。*注：如果不需要保存文件或者不需要处理文件等参数，可以直接向 formData 中append
+						await _part.file.on( 'error', ( e ) => { handlePipeError( e, "\t1.1 pipe @empty file in parts" ) } ).pipe( fs.createWriteStream( _file[ "orgPathName" ] ) ).on( 'error', ( e ) => { handlePipeError( e, "\t1.2 pipe empty @saveing..." ) } );			// 把POST中的图像数据保存到文件。*注：如果不需要保存文件或者不需要处理文件等参数，可以直接向 formData 中append
 						continue;
 					}
 					_files.push( _file );
@@ -129,7 +136,7 @@ module.exports = async function ( fastify, options, next ) {
 							fs.renameSync( _file[ "orgPathName" ], _file[ "realPathName" ] );
 						}
 					});
-					await _part.file.on( 'error', ( e ) => { handlePipeError( e, "pipe @file in parts" ); } ).pipe( fs.createWriteStream( _file[ "orgPathName" ] ) ).on( 'error', ( e ) => { handlePipeError( e, "pipe @saveing..." ); } );	// 把POST中的图像数据保存到文件
+					await _part.file.on( 'error', ( e ) => { handlePipeError( e, "\t2.1 pipe @file in parts" ); } ).pipe( fs.createWriteStream( _file[ "orgPathName" ] ) ).on( 'error', ( e ) => { handlePipeError( e, "\t2.2 pipe @saveing..." ); } );	// 把POST中的图像数据保存到文件
 				} else {
 					console.log( "\t- " + "<value> ".green + _part.fieldname.underline + ": " + _part.value );
 					_transferFormData.append( _part.fieldname, _part.value );
@@ -143,7 +150,7 @@ module.exports = async function ( fastify, options, next ) {
 			// return;
 		}
 		// 修正文件数据格式: 如 .webp ===================================================================================
-		// console.log( "\tConvert..." );
+		console.log( "\tConvert...".underline );
 		if ( _files.length > 0 ) {
 			for ( let _i = 0; _i < _files.length; _i ++ ) {						// 转换后台无法处理的图片格式到 jpg 格式
 				if ( _files[ _i ][ "realMime" ] == "image/webp" ) {
@@ -166,12 +173,12 @@ module.exports = async function ( fastify, options, next ) {
 			for ( let _i = 0; _i < _files.length; _i ++ )
 			{
 				if ( _files[ _i ][ "realMime" ].substr( 0, 6 ) == "image/" ) {						// 根据本例实际需求，改为添加一个图片类型的文件即可，即只往AI识别后台发送一张图片
-					try {
-						_transferFormData.append( 'file', fs.createReadStream( _files[ _i ][ "realPathName" ] ).on( 'error', ( e ) => { handlePipeError( e, "pipi @append readStream..." ); } ) );		// *注：输出流可以监听 data, end, close, finish 事件
+					// try {
+						_transferFormData.append( 'file', fs.createReadStream( _files[ _i ][ "realPathName" ] ).on( 'error', ( e ) => { handlePipeError( e, "\t4.1 pipi @append readStream..." ); } ) );		// *注：输出流可以监听 data, end, close, finish 事件
 						break;			// 限制只 POST 第一张图片
-					} catch ( err ) {
-						console.log( err );
-					}
+					// } catch ( err ) {
+					// 	console.log( err );
+					// }
 				} else {
 					continue;
 				}
@@ -179,7 +186,7 @@ module.exports = async function ( fastify, options, next ) {
 		}
 		// 提交 form 对象到后台 ===================================================================================
 		let _query = stringify( req.query );
-		// console.log( "\tTransfering..." );
+		console.log( "\tTransfering...".underline );
 		const _transferRequest = http.request(				// import { request } from 'http';	// 创建一个 'http.request' 对象 【流？】
 			{
 				host: proxyHost,
@@ -217,7 +224,7 @@ module.exports = async function ( fastify, options, next ) {
 		// _transferRequest.on( 'finish', () => {
 		// 	if ( debug ) { console.log( '_transferRequest: ' + 'Sending post data through pipe ends.'.cyan ); }
 		// });
-		_transferFormData.on( 'error', ( e ) => { handlePipeError( e, "pipe @post local..." ) } ).pipe( _transferRequest ).on( 'error', ( e ) => { handlePipeError( e, "pipe @post URL..." ) } );							// 向 AI 后端发送 POST 图像数据：把 _transferFormData 流通过管道(pipe)流向 reqRroxy 流
+		_transferFormData.on( 'error', ( e ) => { handlePipeError( e, "\t5.1 pipe @post local..." ) } ).pipe( _transferRequest ).on( 'error', ( e ) => { handlePipeError( e, "\t5.2 pipe @post URL..." ) } );							// 向 AI 后端发送 POST 图像数据：把 _transferFormData 流通过管道(pipe)流向 reqRroxy 流
 	});
 }
 // module.exports = proxy;		//routes
