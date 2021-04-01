@@ -70,4 +70,3 @@ colors.setTheme({
 });
 
 // console.log( "["+"OK".green.inverse+"]" + " 'colors' module loaded successfully.".cyan );
-// console.log( ( "\tEnter the '" + "help".white.inverse + "' command to get the command list." ) );

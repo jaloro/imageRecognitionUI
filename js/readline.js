@@ -61,7 +61,7 @@ rl.on( 'line', function( a_line ){
 		case "status":
 			let _files = funcs.filesNum( imgsDir );
 			console.log( "\t┌───────────────┬───────────────┐" );
-			console.log( "\t│ IP Address\t│ " + funcs.getIPAdress().cyan + "\t│" );
+			console.log( "\t│ IP Address\t│ " + funcs.getIPAdress().bBlue + "\t│" );
 			// console.log( "\t├┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┼┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┤" );
 			console.log( "\t│ Port\t\t│ " + ( '' + fastify.server.address().port ).yellow + "\t\t│" );
 			console.log( "\t├───────────────┼───────────────┤" );
@@ -80,6 +80,7 @@ rl.on( 'line', function( a_line ){
 				"\n\t exit\t - Exit program." +
 				"\n\t help\t - View command list." +
 				"\n\t reload\t - Reload configuration file." +
+				"\n\t state\t - Change server state." +
 				"\n\t status\t - Displays service status." +
 				"\n\t time\t - Displays the current time." +
 				"\n\t└────────────────────────────────────────────────────────┘" ).warn );
@@ -98,8 +99,8 @@ rl.on( 'close', function() {
 	process.exit( 0 );
 });
 
-console.log( "[ " + "OK".green.inverse + " ]" + " Command line command mode started successfully.".cyan );
-console.log( ( "\tEnter the '" + "help".white.underline + "' command to get the command list." ) );
+// console.log( "[ " + "OK".green.inverse + " ]" + " Command line command mode started successfully.".cyan );
+// console.log( ( "\tEnter the '" + "help".white.underline + "' command to get the command list." ) );
 
 
 
