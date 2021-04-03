@@ -4,29 +4,30 @@ async function asyncRequire( a_libName, a_opts = null, a_log = null ) {
 		if ( !a_opts ) _rtn = await require( a_libName );						// 加载无参数模块
 		else _rtn = await require( a_libName )( a_opts );						// 加载带参数模块
 	} catch ( e ) {
-		console.log( "[ \x1B[30m\x1B[41mFAIL\x1b[0m ]'\x1B[4m\x1B[91m\x1B[4m" + a_libName + "\x1b[0m' loading failed." );					// \x1b[0m 效果终止符
+		console.log( "[ \x1B[30m\x1B[41mFAIL\x1B[0m ]'\x1B[4m\x1B[91m\x1B[4m" + a_libName + "\x1B[0m' Modular loading failed." );					// \x1B[0m 效果终止符
 		// console.log( "\t\x1B[4m" + e.message + "\x1B[0m");
 		console.log( "\x1B[31m\-----------------------------------------------------------------------------\nexit\x1B[0m" );
 		process.exit( 1 );
 	}
-	console.log( "[ \x1B[30m\x1B[42mOK\x1b[0m ] '\x1B[4m\x1B[94m\x1B[4m" + a_libName + "\x1b[0m' loaded successfully." );				// console.log( "[ " + "OK".green.inverse + " ]\t'" + a_libName.bBlue.underline + "' loaded successfully." );
+	console.log( "[ \x1B[30m\x1B[42mOK\x1B[0m ] '\x1B[4m\x1B[34m\x1B[4m" + a_libName + "\x1B[0m'" + ( a_libName.length > 50 ? "\n\t" : " " ) + "\x1B[92mModular loaded successfully.\x1B[0m" );			// console.log( "[ " + "OK".green.inverse + " ]\t'" + a_libName.bBlue.underline + "' loaded successfully." );
 	if ( a_log ) console.log( "\t" + a_log );
 	return _rtn;
 }
 
 const start = async () => {
-	console.log( "\x1B[97m=============================================================================\x1b[0m" );
+	console.log( "\x1B[97m=============================================================================\x1B[0m" );
 	await asyncRequire( './js/colors.js' );					// 加载控制台色彩模块
 	await asyncRequire( './lib/genFuncs' );					// 加载通用函数库
 	global.fs = await asyncRequire( 'fs' );					// ■ 加载 fs 模块
 	global.path = await asyncRequire( 'path' );				// ■ 加载 path 模块
 	
-	global.iniResult = await asyncRequire( './conf/transfer_ini.json' );		// 加载配置文件
+	global.iniFile = path.resolve( __dirname, './conf/transfer_ini.json' );		// *注:可以使用"./"或者直接后续目录路径，不能使用"/"，因为"/"会被理解为根目录，导致前段路径被忽略
+	global.iniResult = await asyncRequire( iniFile );		// 加载配置文件 *注：require 加载文件时，是相对当前文件的位置的，所以 "./" 和 __dirname 效果相同
 	global.debug = iniResult[ "debug" ] || false;			// debug 状态
 	global.svrState = 1;				// 服务器工作状态值
 	
 	global.imgsDir = path.join( __dirname, iniResult[ "imgsDir" ] || "/imgsTemp" );						// 创建图片保存目录
-	if ( funcs.mkdirsSync( imgsDir ) ) { console.log( "[ " + "OK".green.inverse + " ]" + " Image directory created successfully:\n\t".bBlue + imgsDir.green.underline ); }
+	if ( funcs.mkdirsSync( imgsDir ) ) { console.log( "[ " + "OK".green.inverse + " ]" + " Image directory created successfully:\n\t".bBlue + imgsDir.underline ); }
 	else { process.exit(1); }
 	
 	global.fastify = await asyncRequire( 'fastify', { logger: false } );

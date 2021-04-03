@@ -185,10 +185,9 @@ module.exports = async function ( fastify, options, next ) {
 			});
 		}, _saveAllArgsError => {});
 		
-		convertFormat.then( async _convertFormatSuccess => {					// 向后台发送请求
+		let transferPost = convertFormat.then( async _convertFormatSuccess => {					// 向后台发送请求
 			console.log("\tConvert file format successfully".red);
 			if ( _files.length > 0 ) {
-				
 				for ( let _j = 0; _j < _files.length; _j++ ) {
 					if ( _files[ _j ][ "realMime" ].substr( 0, 6 ) == "image/" ) {
 						try {
@@ -201,44 +200,69 @@ module.exports = async function ( fastify, options, next ) {
 					}
 				}
 			}
-			let _query = stringify( req.query );
-			const _transferRequest = http.request(			// import { request } from 'http';	// 创建一个 'http.request' 对象 【流？】
-				{
-					host: proxyHost,
-					port: proxyPort,
-					path: proxyRoute + ( _query == '' ? '' : ( "?" + _query ) ),
-					method: 'POST',
-					headers: _transferFormData.getHeaders(),
-				},
-				( res ) => {
-					// res.writeHead( 200, {'Content-Type': 'text/json;charset=utf-8','Access-Control-Allow-Origin':'*'} );
-					// res.setHeader( 'Access-Control-Allow-Origin', '*' );
-					if ( debug ) { console.log( "\t Response ".grey.inverse + " <-- @" + funcs.now().magenta ); }
-					res.on( "end", () => {
-						if ( debug ) { console.log( "\tRes.end - " + "End of receiving response data.".bBlue ); }
-						console.log( '\t---------------------------------------------------------------------'.grey );	// 灰色分割线
-						if ( global.rl )
+			let _timeoutPms = [			// 创建 Promise 数组用于设置后台请求超时控制；
+				new Promise( ( resolve, reject ) => {
+					let _query = stringify( req.query );
+					const _transferRequest = http.request(			// import { request } from 'http';	// 创建一个 'http.request' 对象 【流？】
 						{
-							global.rl.setPrompt( global.defaultPrompt );
-							global.rl.prompt();
+							host: proxyHost,
+							port: proxyPort,
+							path: proxyRoute + ( _query == '' ? '' : ( "?" + _query ) ),
+							method: 'POST',
+							headers: _transferFormData.getHeaders(),
+						},
+						( res ) => {
+							resolve( res );
 						}
-					} );
-					if ( showResponse ) {
-						if ( debug ) {
-							console.log( "\tRes - " + "Code: ".bBlue, res.statusCode );				// funcs.printObject( res, 1, "\t" );
-						}
-					}
-					reply.send( res );
-				}
-			);
-			_transferFormData.on( 'end', () => {		// 'finish'
-				console.log( "\tAppend pipe end".red );
-			});
-			console.log( "\tTransfering...".underline );
-			_transferFormData.on( 'error', ( e ) => { handlePipeError( e, "\t5.1 pipe @post local..." ) } ).pipe( _transferRequest ).on( 'error', ( e ) => { handlePipeError( e, "\t5.2 pipe @post URL..." ) } );			// 向 AI 后端发送 POST 图像数据：把 _transferFormData 流通过管道(pipe)流向 reqRroxy 流
+					);
+					_transferFormData.on( 'end', () => {		// 'finish'
+						console.log( "\tAppend pipe end".red );
+					});
+					console.log( "\tTransfering...".underline );
+					_transferFormData.on( 'error', ( e ) => { handlePipeError( e, "\t5.1 pipe @post local..." ) } ).pipe( _transferRequest ).on( 'error', ( e ) => { handlePipeError( e, "\t5.2 pipe @post URL..." ) } );			// 向 AI 后端发送 POST 图像数据：把 _transferFormData 流通过管道(pipe)流向 reqRroxy 流
+				}),
+				new Promise( ( resolve, reject ) => {
+					setTimeout( () => {
+						reject( "Time out !!!" );
+					}, iniResult[ "maxTimeout" ] || 5000 );
+				})
+			];
+			return Promise.race( _timeoutPms );
 		});
-	}, _convertFormatError => {});
-	// ================================================================================================================================================
+		
+		transferPost.then( res_value => {		// 接收到后台返回的数据
+			// res_value.writeHead( 200, {'Content-Type': 'text/json;charset=utf-8','Access-Control-Allow-Origin':'*'} );
+			// res_value.setHeader( 'Access-Control-Allow-Origin', '*' );
+			if ( debug ) { console.log( "\t Response ".grey.inverse + " <-- @" + funcs.now().magenta ); }
+			res_value.on( "end", () => {
+				if ( debug ) { console.log( "\tRes.end - " + "End of receiving response data.".bBlue ); }
+				console.log( '\t---------------------------------------------------------------------'.grey );	// 灰色分割线
+				if ( global.rl )
+				{
+					rl.setPrompt( defaultPrompt );
+					rl.prompt();
+				}
+			} );
+			if ( showResponse ) {
+				if ( debug ) {
+					console.log( "\tRes - " + "Code: ".bBlue, res_value.statusCode );				// funcs.printObject( res, 1, "\t" );
+				}
+			}
+			reply.send( res_value );
+		}, timeout => {				// 超时处理
+			console.log( ( "\tURL Error: " + timeout ).red );
+			reply.send( { "statusCode":406, "version":"0.0.1", "code":"FST_INVALID_MULTIPART_CONTENT_TYPE", "method":"POST", "time":funcs.now(), "error":"Not Acceptable", "message": "the request is not multipart" } );
+			if ( global.rl )
+			{
+				rl.setPrompt( defaultPrompt );
+				rl.prompt();
+			}
+		})
+		.catch ( error => {
+			// console.log(  );
+		});
+	});
+	// [ POST ] ================================================================================================================================================
 	console.log( "[ " + "OK".green.inverse + " ]" + ( " Transfer '" + "POST".cyan.inverse + "' service is registered to 'fastify'." ).bBlue );
 	console.log( "\tServer Route\t: " + ( "'" + serverRoute + "'" ).green );
 	console.log( "\tProxy Host\t: " + proxyHost.bBlue );

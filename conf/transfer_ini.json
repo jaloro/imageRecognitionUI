@@ -9,5 +9,6 @@
 	"proxyHost":"192.168.3.22",
 	"proxyPort":8888,
 	"proxyRoute":"/PostImage/PostImage",
+	"maxTimeout":5000,
 	"imgNumLmt":0
 }
