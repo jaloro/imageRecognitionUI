@@ -2,13 +2,17 @@
 	"debug":true,
 	"corsOption":"*",
 	"showResponse":true,
+	"staticAbsoluteMod":false,
 	"static":"/public",
 	"serverRoute":"/PostImage",
+	"imgsDirAbsoluteMod":false,
 	"imgsDir":"/imgsTemp",
-	"bak":{ "proxyHostBak":"34.94.243.224", "proxyPortBak":8080 },
-	"proxyHost":"192.168.3.22",
-	"proxyPort":8888,
+	"bak":{ "proxyHostBak":"34.121.115.204", "proxyPortBak":8080 },
+	"proxyHost":"34.121.115.204",
+	"proxyPort":8080,
 	"proxyRoute":"/PostImage/PostImage",
+	"hwLmt":416,
 	"maxTimeout":5000,
-	"imgNumLmt":0
+	"imgNumLmt":0,
+	"readline":true
 }

@@ -1,17 +1,28 @@
+// 同步加载模块
 async function asyncRequire( a_libName, a_opts = null, a_log = null ) {
 	let _rtn;
 	try {
-		if ( !a_opts ) _rtn = await require( a_libName );						// 加载无参数模块
-		else _rtn = await require( a_libName )( a_opts );						// 加载带参数模块
+		if ( !a_opts ) _rtn = await require( a_libName );	// 加载无参数模块
+		else _rtn = await require( a_libName )( a_opts );	// 加载带参数模块
 	} catch ( e ) {
-		console.log( "[ \x1B[30m\x1B[41mFAIL\x1B[0m ]'\x1B[4m\x1B[91m\x1B[4m" + a_libName + "\x1B[0m' Modular loading failed." );					// \x1B[0m 效果终止符
+		console.log( "[ \x1B[30m\x1B[41mFAIL\x1B[0m ]'\x1B[4m\x1B[91m\x1B[4m" + a_libName + "\x1B[0m' --- Modular loading failed." );			// \x1B[0m 效果终止符
 		// console.log( "\t\x1B[4m" + e.message + "\x1B[0m");
 		console.log( "\x1B[31m\-----------------------------------------------------------------------------\nexit\x1B[0m" );
 		process.exit( 1 );
 	}
-	console.log( "[ \x1B[30m\x1B[42mOK\x1B[0m ] '\x1B[4m\x1B[34m\x1B[4m" + a_libName + "\x1B[0m'" + ( a_libName.length > 50 ? "\n\t" : " " ) + "\x1B[92mModular loaded successfully.\x1B[0m" );			// console.log( "[ " + "OK".green.inverse + " ]\t'" + a_libName.bBlue.underline + "' loaded successfully." );
+	console.log( "[ \x1B[30m\x1B[42mOK\x1B[0m ] '\x1B[4m\x1B[34m\x1B[4m" + a_libName + "\x1B[0m'" + ( a_libName.length > 50 ? "\n\t" : " " ) + "\x1B[92m --- Modular loaded successfully.\x1B[0m" );			// console.log( "[ " + "OK".green.inverse + " ]\t'" + a_libName.bBlue.underline + "' loaded successfully." );
 	if ( a_log ) console.log( "\t" + a_log );
 	return _rtn;
+}
+
+// 查找启动参数中有没有对应的参数
+const findArg = function ( a_arg ) {
+	if ( startArgs ) {
+		for ( let _a = 0; _a < startArgs.length; _a ++ ) {
+			if ( a_arg == startArgs[ _a ] ) return true;
+		}
+	}
+	return false;
 }
 
 const start = async () => {
@@ -26,9 +37,10 @@ const start = async () => {
 	global.debug = iniResult[ "debug" ] || false;			// debug 状态
 	global.svrState = 1;				// 服务器工作状态值
 	
-	global.imgsDir = path.join( __dirname, iniResult[ "imgsDir" ] || "/imgsTemp" );						// 创建图片保存目录
+	global.imgsDir = path.join( ( iniResult[ "imgsDirAbsoluteMod" ] || false ) ? "" : __dirname, iniResult[ "imgsDir" ] || "/imgsTemp" );		// 创建图片保存目录, 有绝对路径模式，可用于把图片保存路径设置到内存硬盘中
 	if ( funcs.mkdirsSync( imgsDir ) ) { console.log( "[ " + "OK".green.inverse + " ]" + " Image directory created successfully:\n\t".bBlue + imgsDir.underline ); }
 	else { process.exit(1); }
+	funcs.delDir( imgsDir, false );							// 清理图片目录；第二个参数为 false 表示删除文件夹下所有文件和子文件夹，但保留文件夹本身
 	
 	global.fastify = await asyncRequire( 'fastify', { logger: false } );
 	await fastify.register( require( 'fastify-static' ), { root: path.join( __dirname, iniResult[ "static" ] ), prefix: iniResult[ "static" ] /*, optional: default '/'*/ } );
@@ -51,11 +63,14 @@ const start = async () => {
 		console.log( "-----------------------------------------------------------------------------".error );
 		process.exit(1);
 	}
-	await asyncRequire( './js/readline.js', null, "Enter the '" + "help".white.underline + "' command to get the command list." );			// 加载行命令模块 './js/readline.js'
 	console.log( "-----------------------------------------------------------------------------".bBlue );
-	global.rl.setPrompt( global.defaultPrompt );
-	global.rl.prompt();
+	if ( iniResult[ "readline" ] == true && ( findArg( "-noreadline" ) == false ) ) {
+		await asyncRequire( './js/readline.js', null, "Enter the '" + "help".white.underline + "' command to get the command list." );		// 加载行命令模块 './js/readline.js'
+		global.rl.setPrompt( global.defaultPrompt );
+		global.rl.prompt();
+	}
 }
 
-start();			// 启动
+global.startArgs = process.argv;		// 获取命令行参数数组
+start();								// 启动
 

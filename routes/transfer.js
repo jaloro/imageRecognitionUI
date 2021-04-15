@@ -3,6 +3,7 @@ const http = require('http');
 const formData = require('form-data');						// import * as formData from 'form-data'; 用于 post 提交表格参数
 const { stringify } = require('querystring');				// 用于提取 URL 中的 get 字符串
 const sharp = require('sharp');								// 用于图像格式转换
+const sizeOf = require('image-size');						// 获取图像尺寸
 
 let showResponse = iniResult[ "showResponse" ] || true;							// 是否显示转发后的结果值
 let serverRoute = iniResult[ "serverRoute" ] || "/";							// 服务器路径
@@ -19,6 +20,11 @@ function uufn(){
 	_uufn = _uufn + parseInt( Date.now() ) + "-" + _uufnIndex;					// _uufn = _uufn + funcs.getTimestamp() + "-" + _uufnIndex;
 	return _uufn;
 }
+
+process.on('unhandledRejection', (reason, p) => {
+	// throw reason;
+	console.log( reason );
+});
 
 // 根据文件头信息返回文件真实 mimetype 值, 支持格式: jpg gif png webp jfif bmp 
 function getMimeTypeByRealFormat( a_fileHeader ) {
@@ -60,7 +66,20 @@ async function convertToJpg ( a_inFile, a_outFile, a_quality = 75 ) {
 		});					// finish 事件先于 close 事件发生
 		fs.createReadStream( a_inFile ).on( 'error', ( e ) => { if ( e ) { handlePipeError( e, "\t3.1 ..." ), reject( e ); } } ).pipe( sharp().jpeg( { quality: a_quality } ) ).on( 'error', ( e ) => { if ( e ) { reject( e ); } } ).pipe( _outputStream ).on( 'error', ( e ) => { if ( e ) { handlePipeError( e, "\t3.2 ..." ), reject( e ); } } ); 					// *注：读取流可以监测到 end 和 close 事件；写入流没有监测到 end 事件，只能监测 close 事件
 	});
-};
+}
+
+// 调整图片尺寸
+async function imageResize ( a_inFile, a_outFile, a_width, a_height ) {
+	console.log( a_inFile, a_outFile.bGreen );
+	return new Promise( ( resolve, reject ) => {
+		let _outputStream = fs.createWriteStream( a_outFile );					// 建立转换写入流， *注：写入流没有监测到 end 事件，需要监测 close 事件
+		_outputStream.on( 'close', () => {
+			console.log( "\tResize image succeeded.".bGreen );
+			resolve( { success: true } );
+		});					// finish 事件先于 close 事件发生
+		fs.createReadStream( a_inFile ).on( 'error', ( e ) => { if ( e ) { handlePipeError( e, "\t3.3 ..." ), reject( e ); } } ).pipe( sharp().resize( a_width, a_height ) ).on( 'error', ( e ) => { if ( e ) { reject( e ); } } ).pipe( _outputStream ).on( 'error', ( e ) => { if ( e ) { handlePipeError( e, "\t3.4 ..." ), reject( e ); } } ); 								// *注：读取流可以监测到 end 和 close 事件；写入流没有监测到 end 事件，只能监测 close 事件
+	});
+}
 
 // 管道错误处理函数 ------------------------------------------ < Function >
 function handlePipeError( err, a_msg = "" ) {
@@ -185,8 +204,59 @@ module.exports = async function ( fastify, options, next ) {
 			});
 		}, _saveAllArgsError => {});
 		
-		let transferPost = convertFormat.then( async _convertFormatSuccess => {					// 向后台发送请求
-			console.log("\tConvert file format successfully".red);
+		let resizeImage = convertFormat.then( _convertFormatSuccess => {		// 修正文件尺寸 =================================================================================================
+		// let resizeImage = saveParts.then( _convertFormatSuccess => {			// 修正文件尺寸 =================================================================================================
+			console.log("\tConvert Format successfully".red);
+			return new Promise( async ( resolve, reject ) => {
+				if ( _files.length > 0 ) {
+					for ( let _i = 0; _i < _files.length; _i ++ ) {				// 判断图片尺寸
+						console.log( "\tFormat:" + _files[ _i ][ "realMime" ].substr( 0, 5 ).cyan );
+						if ( _files[ _i ][ "realMime" ].substr( 0, 5 ) == "image" || _files[ _i ][ "realMime" ].substr( 0, 5 ) == "mage/") {
+							console.log( "\t" + _files[ _i ][ "realPathName" ].underline );
+							await new Promise( ( resolve, reject ) => {			// 此处必须有 await，否则仍然是并发保存
+								sizeOf( _files[ _i ][ "realPathName" ], ( err, dimensions ) => {
+									console.log( "\t" + ( _i + 1 ) + ".get image size:".underline, dimensions.width, dimensions.height );
+									_files[ _i ][ "width" ] = dimensions.width;
+									_files[ _i ][ "height" ] = dimensions.height;
+									resolve();
+								});
+							})
+							.then( async _sizeOfComplete => {
+								if ( _files[ _i ][ "width" ] <= iniResult[ "hwLmt" ] && _files[ _i ][ "height" ] <= iniResult[ "hwLmt" ] ) {
+									// break;
+								} else {
+									let _extname = path.extname( _files[ _i ][ "realPathName" ] );
+									let _newPathName = path.resolve( _files[ _i ][ "realPathName" ].replace( _extname, "-resize" + _extname ) );
+									let _width = 0;
+									let _height = 0;
+									if ( _files[ _i ][ "width" ] > _files[ _i ][ "height" ] ) {
+										_width = iniResult[ "hwLmt" ];
+										_height = Math.round( iniResult[ "hwLmt" ] * _files[ _i ][ "height" ] / _files[ _i ][ "width" ] );
+									} else if ( _files[ _i ][ "width" ] > iniResult[ "hwLmt" ] ) {
+										_height = iniResult[ "hwLmt" ];
+										_width = Math.round( iniResult[ "hwLmt" ] * _files[ _i ][ "width" ] / _files[ _i ][ "height" ] );
+									}
+									console.log( "\tResize image ...".underline, _files[ _i ][ "realPathName" ], _newPathName.cyan, _files[ _i ][ "realExt" ].red, ( "-resize" + _files[ _i ][ "realExt" ] ).green );
+									await imageResize( _files[ _i ][ "realPathName" ], _newPathName, _width, _height );		// 转换图像到 jpg 格式（ Promise ）
+									_files[ _i ][ "realPathName" ] = _newPathName;
+									// break;				// 限制只处理第一张图片
+								}
+								// break;
+							}, _sizeOfError => {
+							});
+							break;
+						} else {
+							continue;			// 非图片格式文件，跳过
+						}
+					}
+				}
+				resolve();
+			});
+		}, _convertFormatError => {});
+		
+		// let transferPost = convertFormat.then( async _convertFormatSuccess => {					// 向后台发送请求
+		let transferPost = resizeImage.then( async _resizeSuccess => {								// 向后台发送请求
+			console.log("\tResize image successfully".red);
 			if ( _files.length > 0 ) {
 				for ( let _j = 0; _j < _files.length; _j++ ) {
 					if ( _files[ _j ][ "realMime" ].substr( 0, 6 ) == "image/" ) {
