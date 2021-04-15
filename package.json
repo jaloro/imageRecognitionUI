@@ -2,22 +2,24 @@
   "name": "website",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
   "directories": {
     "lib": "lib"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node index.js"
   },
   "author": "hideous",
   "license": "ISC",
   "dependencies": {
     "axios": "^0.21.1",
+    "colors": "^1.4.0",
     "fastify": "^3.12.0",
     "fastify-cors": "^5.2.0",
     "fastify-multipart": "^4.0.0",
     "fastify-static": "^4.0.0",
     "form-data": "^4.0.0",
-    "vue": "^2.6.12"
+    "image-size": "^0.9.7",
+    "vue": "^2.6.12",
+    "sharp": "^0.27.2"
   }
 }
