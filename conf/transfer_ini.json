@@ -7,7 +7,7 @@
 	"serverRoute":"/PostImage",
 	"imgsDirAbsoluteMod":false,
 	"imgsDir":"/imgsTemp",
-	"bak":{ "proxyHostBak":"34.121.115.204", "proxyPortBak":8080 },
+	"bak":{ "proxyHostBak":"34.121.115.204", "proxyHostBak2":"192.168.3.22", "proxyPortBak":8080 },
 	"proxyHost":"34.121.115.204",
 	"proxyPort":8080,
 	"proxyRoute":"/PostImage/PostImage",

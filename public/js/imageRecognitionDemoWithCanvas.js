@@ -3,15 +3,16 @@ var ini;
 // axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
 axios.get( "./conf/imageRecognitionIni.json" )
 .then(
-	( res ) => { start( res ); },				// 加载配置文件成功
-	( err ) => { startFail( err.request ); }	// 加载配置文件失败
+	( res ) => { start( res ); },							// 加载配置文件成功
+	( err ) => { startFail( err.request ); }				// 加载配置文件失败
 );
 
 function start( a_ini ){
 	ini = a_ini.data;
-	var _picFile;			// 图片文件对象
-	var app = new Vue({		// 使用 Vue 引擎
-		el:"#app",			// 把 Vue 加载到 id="app" 的 html 元素上
+	var _picFile;						// 图片文件对象
+	var _canvas;
+	var app = new Vue({					// 使用 Vue 引擎
+		el:"#app",						// 把 Vue 加载到 id="app" 的 html 元素上
 		data:{
 			selectedImgSrc:"",
 			picNameLabelColor:"color: #00ffff;",
@@ -30,23 +31,23 @@ function start( a_ini ){
 		methods:{
 			selectImage:function( e ){	// 选择本地图片并加载预览
 				// 判断 canvas 是否兼容有效
-				var _canvas = this.$refs.canvasPic;
+				_canvas = this.$refs.canvasPic;
 				if ( _canvas.getContext ){
 					var _content = _canvas.getContext("2d");
 				} else {
 					return;
 				}
-				_picFile = e.target.files[0];
-				if (!_picFile) return;
+				_picFile = e.target.files[ 0 ];
+				if ( !_picFile ) return;
 				this.$refs.waitingBox.style.display = "block";
 				this.$refs.alertMsg.style.display = "none";
 				var reader = new FileReader();
-				reader.onload = () => {	//reader.onload = (e)=>{	//此处e可省略，因为 e.result 即 reader;  todo? 此处用 function 替代 => 无法正确执行？？？可能是因为 this 指向问题，在箭头函数中，this指向正确的vue对象
-					this.selectedImgSrc = reader.result;	// 等同于使用 e 参数时的： e.target.result;
+				reader.onload = () => {	//reader.onload = (e)=>{				//此处e可省略，因为 e.result 即 reader;  todo? 此处用 function 替代 => 无法正确执行？？？可能是因为 this 指向问题，在箭头函数中，this指向正确的vue对象
+					this.selectedImgSrc = reader.result;						// 等同于使用 e 参数时的： e.target.result;
 					this.selectedImgName = _picFile.name;
 					var _img = new Image();
-					_img.onload = () => {		// 图片加载完毕事件
-						// TODO: 判断是否超过了尺寸限制	// console.log( _img.width, _img.height );
+					_img.onload = () => {					// 图片加载完毕事件
+						// TODO: 判断是否超过了尺寸限制		// console.log( _img.width, _img.height );
 						this.picOrgWidth = _img.width;
 						this.picOrgHeight = _img.height;
 						if ( this.picOrgWidth > this.picOrgHeight ){	// 横向图
@@ -64,26 +65,29 @@ function start( a_ini ){
 						this.picCrtHeight = _img.height;
 						this.picScale = _img.width / this.picOrgWidth;
 						_canvas.height = _canvas.height;	// 清空canvas
-						_content.drawImage( _img, (500-_img.width)*0.5, (500-_img.height)*0.5, _img.width, _img.height);
+						_content.drawImage( _img, ( 500 - _img.width )*0.5, ( 500 - _img.height ) * 0.5, _img.width, _img.height );
 						this.praseRtn = {};
 						this.$refs.waitingBox.style.display = "none";
-						// this.parseRes();	// 测试画框代码
+						// this.parseRes();					// 测试画框代码
 					}
-					_img.src = this.selectedImgSrc;		// 加载图片, 加载完成时触发 onload 事件
+					_img.src = this.selectedImgSrc;			// 加载图片, 加载完成时触发 onload 事件
 				}
-				reader.readAsDataURL( _picFile );		// 读取本地图片数据，用于 FormData 上传
+				reader.readAsDataURL( _picFile );			// 读取本地图片数据，用于 FormData 上传，现在改为直接把 canvas 中的数据上传，对于大图提升很多网络传输效率
 			},
 			uploadImage:function(){		// 上传图片
 				if ( this.selectedImgSrc == "" ) return;
+				let _blobData = dataURLtoBlob( _canvas.toDataURL() );
+				
 				var formData = new FormData();
-				formData.append( 'file', _picFile );
+				formData.append( 'file', _blobData );		// formData.append( 'file', _picFile ); // 直接把 canvas 中的数据上传，对于大图提升很多网络传输效率
+
 				// axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
 				this.$refs.waitingBox.style.display = "block";
 				axios.post( ini["imgRecognitionSvrUrl"], formData ).then(
 					( res ) => {		// console.log( res.status ); console.log( res.data );
 						// console.log( "上传图片结果：" );
 						// console.log( res.data );
-						this.parseRes( res.data );		// 调用画框处理函数
+						this.parseRes( res.data );			// 调用画框处理函数
 					},
 					( err ) => {		// 注：使用箭头函数可以避免 this 指向转移的问题，如果不使用箭头函数，则 this 需要事先保存到如 that 的变量中
 						this.$refs.waitingBox.style.display = "none";
@@ -93,7 +97,7 @@ function start( a_ini ){
 				);
 				
 			},
-			parseRes:function( a_resData = null ){		// 解析返回值
+			parseRes:function( a_resData = null ){			// 解析返回值
 				if ( !a_resData ) {
 					console.log( "\t本地模拟数据" )
 					a_resData = {
@@ -124,8 +128,8 @@ function start( a_ini ){
 				this.praseRtn = a_resData;
 				this.$refs.waitingBox.style.display = "none";
 			},
-			// btnMouseOver:function( e ){ e.target.className="nes-btn is-primary"; },		// 鼠标在按钮上移入
-			// btnMouseLeave:function( e ){ e.target.className="nes-btn"; },				// 鼠标在按钮上移出
+			// btnMouseOver:function( e ){ e.target.className="nes-btn is-primary"; },				// 鼠标在按钮上移入
+			// btnMouseLeave:function( e ){ e.target.className="nes-btn"; },						// 鼠标在按钮上移出
 			clickImage:function(){ this.$refs.btnSelPic.dispatchEvent(new MouseEvent('click')); }
 		}
 	});
@@ -139,8 +143,8 @@ function toPercent( num, point = 0 ){	// 小数转百分比函数
 
 // 加载配置文件失败时的处理代码
 function startFail( a_err ){
-	var app = new Vue({		// 使用 Vue 引擎
-		el:"#app",			// 把 Vue 加载到 id="app" 的 html 元素上
+	var app = new Vue({					// 使用 Vue 引擎
+		el:"#app",						// 把 Vue 加载到 id="app" 的 html 元素上
 		data:{
 			selectedImgSrc:"",
 			picNameLabelColor:"color: #ff0000;",
@@ -149,8 +153,52 @@ function startFail( a_err ){
 	});
 }
 
+// 把从 canvas 中读取的 base64 数据转换成 blod 格式数据
+function dataURLtoBlob( dataurl ) {
+	var arr = dataurl.split( ',' ), mime = arr[ 0 ].match( /:(.*?);/ )[ 1 ]
+	var bstr = atob( arr[ 1 ] );		// atob() 将 ascii 码解析成 binary 数据; btoa() 将 binary 编码成 ascii 数据; 这对函数不能简单的用于对 Unicode 字符的处理
+	var n = bstr.length;
+	var u8arr = new Uint8Array( n );
+	while ( n-- ) {
+		u8arr[ n ] = bstr.charCodeAt( n );
+	}
+	return new Blob( [ u8arr ], { type: mime } );
+}
+
+// function up2Qn() {
+// 	var xmlHttp;
+// 	if ( window.XMLHttpRequest ) {
+// 		xmlhttp = new XMLHttpRequest();	//code for all new browsers
+// 	}
+// 	xmlhttp.onreadystatechange = function state_Change() {
+// 		if (xmlhttp.readyState == 4) {
+// 			if (xmlhttp.status == 200) {
+// 				console.info("获得picInfo:" + xmlhttp.responseText)
+// 				upload2QN( JSON.parse( xmlhttp.responseText ).data.qnToken, dataURLtoBlob( document.getElementById( "myCanvas" ).toDataURL() ) )
+// 			} else {
+// 				console.info("失败,responseText:" + xmlhttp.responseText + ",statusCode:" + xmlhttp.status);
+// 			}
+// 		}
+// 	}
+// 	xmlhttp.open("POST", "/customer/store/queryPicInfo", true);
+// 	xmlhttp.send(null);
+// }
+
+// //dataURL to blob
+// function dataURLtoBlob( dataurl ) {
+// 	var arr = dataurl.split( ',' ), mime = arr[ 0 ].match( /:(.*?);/ )[ 1 ]
+// 	var bstr = atob( arr[ 1 ] )
+// 	var n = bstr.length;
+// 	var u8arr = new Uint8Array( n );
+// 	while ( n-- ) {
+// 		u8arr[ n ] = bstr.charCodeAt( n );
+// 	}
+// 	return new Blob( [ u8arr ], { type: mime } );
+// }
+
+
 /*
-formProxy.append( 'photo', readStream );			// 添加一个文件型参数到 formData 对象中
+formProxy.append( 'photo', readStream );					// 添加一个文件型参数到 formData 对象中
 		// formProxy.append( 'firstName', 'Marcin' );		// 添加其他值对参数到 formData 对象中
 		let _query = stringify( req.query );
 		const reqProxy = http.request(						// import { request } from 'http';	// 创建一个 'http.request' 对象
