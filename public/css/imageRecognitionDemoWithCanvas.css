@@ -28,12 +28,12 @@ table {	border-color: red; }
 	color: #dddddd;
 }
 .objectValue {
-	color: #00ff0099;
+	color: #00ff00cc;
 }
 .objectItem {
 	white-space: nowrap;
 	/* display: none; */
-	opacity: 0.6;
+	opacity: 0.8;
 }
 
 .objectBox:hover {

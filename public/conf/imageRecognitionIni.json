@@ -1,3 +1,4 @@
 {
-	"imgRecognitionSvrUrl":"/PostImage"
+	"imgRecognitionSvrUrl":"/PostImage",
+	"maxSideLength":416
 }

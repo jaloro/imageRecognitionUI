@@ -85,10 +85,10 @@ async function imageResize ( a_inFile, a_outFile, a_width, a_height ) {
 function handlePipeError( err, a_msg = "" ) {
 	console.log( err );
 	console.log( a_msg.error );
-	if ( rl ) {
-		rl.setPrompt( defaultPrompt );
-		rl.prompt();
-	}
+	// if ( rl ) {
+	// 	rl.setPrompt( defaultPrompt );
+	// 	rl.prompt();
+	// }
 }
 
 // async function proxy( fastify, options, next ) {
@@ -222,7 +222,7 @@ module.exports = async function ( fastify, options, next ) {
 								});
 							})
 							.then( async _sizeOfComplete => {
-								if ( _files[ _i ][ "width" ] <= iniResult[ "hwLmt" ] && _files[ _i ][ "height" ] <= iniResult[ "hwLmt" ] ) {
+								if ( _files[ _i ][ "width" ] <= iniResult[ "maxSideLength" ] && _files[ _i ][ "height" ] <= iniResult[ "maxSideLength" ] ) {
 									// break;
 								} else {
 									let _extname = path.extname( _files[ _i ][ "realPathName" ] );
@@ -231,11 +231,11 @@ module.exports = async function ( fastify, options, next ) {
 									let _height = 0;
 									// console.log( _files[ _i ][ "width" ], _files[ _i ][ "height" ] );
 									if ( _files[ _i ][ "width" ] > _files[ _i ][ "height" ] ) {
-										_width = iniResult[ "hwLmt" ];
-										_height = Math.round( iniResult[ "hwLmt" ] * _files[ _i ][ "height" ] / _files[ _i ][ "width" ] );
+										_width = iniResult[ "maxSideLength" ];
+										_height = Math.round( iniResult[ "maxSideLength" ] * _files[ _i ][ "height" ] / _files[ _i ][ "width" ] );
 									} else {
-										_height = iniResult[ "hwLmt" ];
-										_width = Math.round( iniResult[ "hwLmt" ] * _files[ _i ][ "width" ] / _files[ _i ][ "height" ] );
+										_height = iniResult[ "maxSideLength" ];
+										_width = Math.round( iniResult[ "maxSideLength" ] * _files[ _i ][ "width" ] / _files[ _i ][ "height" ] );
 									}
 									// console.log( "\tResize image ...".underline, _files[ _i ][ "realPathName" ], _newPathName.cyan, _files[ _i ][ "realExt" ].red, ( "-resize" + _files[ _i ][ "realExt" ] ).green, _width, _height );
 									await imageResize( _files[ _i ][ "realPathName" ], _newPathName, _width, _height );		// 转换图像到 jpg 格式（ Promise ）

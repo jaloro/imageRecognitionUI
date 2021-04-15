@@ -11,7 +11,7 @@
 	"proxyHost":"34.121.115.204",
 	"proxyPort":8080,
 	"proxyRoute":"/PostImage/PostImage",
-	"hwLmt":416,
+	"maxSideLength":416,
 	"maxTimeout":5000,
 	"imgNumLmt":0,
 	"readline":false
