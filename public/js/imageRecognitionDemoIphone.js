@@ -49,6 +49,7 @@ function start( a_ini ){
 					this.selectedImgSrc = reader.result;						// 等同于使用 e 参数时的： e.target.result;
 					this.selectedImgName = _picFile.name;
 					var _img = new Image();
+					// var _img = this.$refs.imagePre;
 					_img.onload = () => {					// 图片加载完毕事件
 						// TODO: 判断是否超过了尺寸限制		// console.log( _img.width, _img.height );
 						let _showWidth = 1;

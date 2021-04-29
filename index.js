@@ -10,7 +10,7 @@ async function asyncRequire( a_libName, a_opts = null, a_log = null ) {
 		console.log( "\x1B[31m\-----------------------------------------------------------------------------\nexit\x1B[0m" );
 		process.exit( 1 );
 	}
-	console.log( "[ \x1B[30m\x1B[42mOK\x1B[0m ] '\x1B[4m\x1B[34m\x1B[4m" + a_libName + "\x1B[0m'" + ( a_libName.length > 50 ? "\n\t" : " " ) + "\x1B[92m --- Modular loaded successfully.\x1B[0m" );			// console.log( "[ " + "OK".green.inverse + " ]\t'" + a_libName.bBlue.underline + "' loaded successfully." );
+	console.log( "[ \x1B[30m\x1B[42mOK\x1B[0m ] '\x1B[4m\x1B[33m\x1B[4m" + a_libName + "\x1B[0m'" + ( a_libName.length > 50 ? "\n\t" : " " ) + "\x1B[92m --- Modular loaded successfully.\x1B[0m" );			// console.log( "[ " + "OK".green.inverse + " ]\t'" + a_libName.bBlue.underline + "' loaded successfully." );
 	if ( a_log ) console.log( "\t" + a_log );
 	return _rtn;
 }
@@ -49,7 +49,7 @@ const start = async () => {
 	// Health check route
 	fastify.get('/', async ( request, options, reply ) => {
 		console.log( " GET ".cyan.inverse + " --> " + "'/'".green.inverse + ' @' + ( new Date() ).toLocaleString().magenta );
-		return { "version":"0.0.1", "mothed":"GET" };
+		return { "version":"0.0.1", "mothed":"GET", "now":( new Date() ).toLocaleString() };
 	});
 	try {
 		await fastify.listen( process.env.PORT || 3000, funcs.getIPAdress() );
@@ -63,12 +63,12 @@ const start = async () => {
 		console.log( "-----------------------------------------------------------------------------".error );
 		process.exit(1);
 	}
-	console.log( "-----------------------------------------------------------------------------".bBlue );
-	if ( iniResult[ "readline" ] == true && ( findArg( "-noreadline" ) == false ) ) {
+	if ( iniResult[ "readline" ] == true && ( findArg( "-noreadline" ) == false ) || findArg( "-readline" ) ) {
 		await asyncRequire( './js/readline.js', null, "Enter the '" + "help".white.underline + "' command to get the command list." );		// 加载行命令模块 './js/readline.js'
+		console.log( "-----------------------------------------------------------------------------".bBlue );
 		global.rl.setPrompt( global.defaultPrompt );
 		global.rl.prompt();
-	}
+	} else console.log( "-----------------------------------------------------------------------------".bBlue );
 }
 
 global.startArgs = process.argv;		// 获取命令行参数数组

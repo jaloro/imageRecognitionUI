@@ -85,10 +85,10 @@ async function imageResize ( a_inFile, a_outFile, a_width, a_height ) {
 function handlePipeError( err, a_msg = "" ) {
 	console.log( err );
 	console.log( a_msg.error );
-	// if ( rl ) {
-	// 	rl.setPrompt( defaultPrompt );
-	// 	rl.prompt();
-	// }
+	if ( global.rl ) {
+		rl.setPrompt( defaultPrompt );
+		rl.prompt();
+	}
 }
 
 // async function proxy( fastify, options, next ) {

@@ -17,19 +17,19 @@ html,body {
 table {	border-color: red; }
 
 .objectBox{
-	border: 1px dashed #ffff00;
+	border: 4px dashed #ffff00;
 	background-color: #00000077;
 	font-size: 100%;
 	position: absolute;
 	padding-left: 5px;
 	text-align: left;
-	opacity: 0.6;
+	opacity: 0.9;
 }
 .objectID {
 	color: #dddddd;
 }
 .objectValue {
-	color: #00ff00cc;
+	color: #00ffffcc;
 }
 .objectItem {
 	white-space: nowrap;
