@@ -19,7 +19,7 @@ function start( a_ini ){
 		el:"#app",						// 把 Vue 加载到 id="app" 的 html 元素上
 		data:{
 			selectedImgSrc:"",
-			picNameLabelColor:"color: #00ffff;",
+			picNameLabelColor:"font-size: 70%; color: #00ffff;",
 			selectedImgName:"- No image were seleted -",
 			picOrgWidth:1,				// 图像原始宽度
 			picOrgHeight:1,				// 图像原始高度

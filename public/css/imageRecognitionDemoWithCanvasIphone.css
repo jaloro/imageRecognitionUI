@@ -10,6 +10,7 @@
 html,body {
 	width: 100%; height: 100%;
 	text-align:center;
+	font-size: 150%;
 	/* font-family: "Zpix", "Press Start 2P", "Arial"; */
 	font-family: "SG09", "Pixeboy", "Press Start 2P", "Microsoft YaHei", "Zpix", "Arial";
 }
@@ -18,29 +19,29 @@ table {	border-color: red; }
 
 .objectBox{
 	border: 4px dashed #ffff00;
-	background-color: #00000077;
+	background-color: rgba(0,0,0,0.5);
 	font-size: 100%;
 	position: absolute;
 	padding-left: 5px;
 	text-align: left;
-	opacity: 0.9;
+	opacity: 0.6;
 }
 .objectID {
 	color: #dddddd;
 }
 .objectValue {
-	color: #00ffffcc;
+	color: rgba(0,255,255,0.8);
 }
 .objectItem {
 	white-space: nowrap;
 	/* display: none; */
-	opacity: 0.8;
+	opacity: 0.6;
 }
 
 .objectBox:hover {
 	/* border: 2px dashed #ffff00; */
 	/* border: 2px solid #ffff00; */
-	background-color: #00000055;
+	background-color: rgba(0,0,0,0.4);
 	text-shadow: #000000 2px 0 0, #000000 0 2px 0, #000000 -2px 0 0, #000000 0 -2px 0;
 	opacity: 1;
 }
@@ -64,14 +65,15 @@ table {	border-color: red; }
 
 #alertMsg {
 	display: none;
-	width: 300px;
-	height: 30px;
+	width: 400px;
+	height: 35px;
 	position: relative;
 	margin: 0 auto;
 	padding: 0;
 	top: 50%;
+	font-size: 70%;
 	transform: translateY(-50%);
-	background-color: #0000dd77;
+	background-color: rgba(0,0,222,0.5);
 }
 
 /* 以下用于图片尺寸设定 以及（水平＆垂直）居中 */
