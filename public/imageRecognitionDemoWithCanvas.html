@@ -26,12 +26,12 @@
 					<td>
 						<div id="按钮区域" style="width: 90%; text-align:right;">
 							<!-- <label class="nes-btn" title="选择要识别的图片" @mouseover="btnMouseOver($event)" @mouseleave="btnMouseLeave($event)"> -->
-							<label class="nes-btn" title="选择要识别的图片" onMouseOut="this.className='nes-btn'" onMouseOver="this.className='nes-btn is-primary'">
+							<label class="nes-btn" title="选择要识别的图片" onMouseOut="this.className='nes-btn'" onMouseOver="this.className='nes-btn is-primary'" style="width: 120px;">
 								<span style="font-weight: 600;">Select Pic</span>
 								<input type="file" ref="btnSelPic" @change="selectImage($event)" accept="image/*,image/jpg,image/jpeg,image/gif,image/png">
 							</label><br/><br/>
 							<!-- <button type="button" class="nes-btn" title="上传图片并识别" @mouseover="btnMouseOver($event)" @mouseleave="btnMouseLeave($event)" @click="uploadImage()" style="font-weight: 600;">Upload Pic</button><br/><br/> -->
-							<button type="button" class="nes-btn" title="上传图片并识别" onMouseOut="this.className='nes-btn'" onMouseOver="this.className='nes-btn is-primary'" @click="uploadImage()" style="font-weight: 600;">Upload Pic</button><br/><br/>
+							<button type="button" class="nes-btn" title="上传图片并识别" onMouseOut="this.className='nes-btn'" onMouseOver="this.className='nes-btn is-primary'" @click="uploadImage()" style="width: 120px; font-weight: 600;">Upload Pic</button><br/><br/>
 							<span style="color: #ff8800;">The picture size should not be larger than 512*512 !</span>
 						</div>
 						<br/><br/>

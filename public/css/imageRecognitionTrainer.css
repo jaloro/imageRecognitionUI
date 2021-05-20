@@ -1,0 +1,116 @@
+@font-face {
+	font-family: 'SG09';
+	src:url('../fonts/SG09.ttf');
+}
+@font-face {
+	font-family: 'Pixeboy';
+	src:url('../fonts/Pixeboy.ttf');
+}
+
+html,body {
+	width: 100%; height: 100%;
+	text-align:center;
+	/* font-family: "Zpix", "Press Start 2P", "Arial"; */
+	font-family: "SG09", "Pixeboy", "Press Start 2P", "Microsoft YaHei", "Zpix", "Arial";
+}
+
+table {	border-color: red; }
+
+.objectBox{
+	border: 2px dashed #0ff;
+	background-color: rgba(0,0,0,0.5);
+	font-size: 100%;
+	position: absolute;
+	padding-left: 5px;
+	text-align: left;
+	opacity: 0.4;
+}
+.objectID {
+	color: #ddd;
+	pointer-events: none;
+}
+.objectValue {
+	color: rgba(0,255,255,0.8);
+	pointer-events: none;
+}
+.objectItem {
+	white-space: nowrap;
+	/* display: none; */
+	opacity: 0.8;
+	pointer-events: none;
+}
+
+.positionID {
+	color: #ddd;
+}
+.positionValue {
+	color: rgba(0,255,255,0.8);
+}
+.categrayValue {
+	color: rgba(200,0,150,0.8);
+}
+
+.maskblock {
+	position: absolute;
+	background-color: rgba(0,0,0,0.85);
+}
+
+.maskline {
+	position: absolute;
+	background-color: rgba(0,0,0,0);
+}
+
+.masklineV {
+	position: absolute;
+	background-color: #000;
+}
+
+.maskLineH {
+	position: absolute;
+	background-color: #000;
+}
+
+/* .objectBox:hover {
+	background-color: rgba(0,0,0,0.4);
+	text-shadow: #000 2px 0 0, #000 0 2px 0, #000 -2px 0 0, #000 0 -2px 0;
+	opacity: 1;
+}
+.objectBox:hover .objectItem {
+	opacity: 1;
+}
+.objectBox:hover .objectID {
+	color: #eee;
+}
+.objectBox:hover .objectValue {
+	color: #0ff;
+} */
+
+#picFileName {
+	opacity: 0.7;
+}
+#picFileName:hover {
+	opacity: 1;
+}
+
+#alertMsg {
+	display: none;
+	width: 300px;
+	height: 30px;
+	position: relative;
+	margin: 0 auto;
+	padding: 0;
+	top: 50%;
+	transform: translateY(-50%);
+	background-color: rgba(0,0,222,0.5);
+}
+
+/* 以下用于图片尺寸设定 以及（水平＆垂直）居中 */
+/* #imagePre {
+	max-width: 500px; max-height: 500px;
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	margin: auto;
+} */
