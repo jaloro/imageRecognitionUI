@@ -1,4 +1,14 @@
 var ini;
+// var _urlGet = window.document.location.href.toString().split("?"); //获取的完整url
+// 	console.log( _urlGet );
+// var _getArgsTemp;
+// var _getArgs;
+// if ( typeof( _urlGet[ 1 ] ) == "string" ) {
+// 	_getArgsTemp = _urlGet[ 1 ].split("&");
+	
+// }
+var $_GET = getGetArgs();
+// console.log( $_GET );
 
 // axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
 axios.get( "./conf/imageRecognitionIni.json" )
@@ -99,6 +109,15 @@ function start( a_ini ){
 				
 				var formData = new FormData();
 				formData.append( 'file', _blobData, Date.now() + "-" + Math.round( Math.random() * 10000 ) + ".jpg" );		// Date.now().toLocaleString() - 带逗号格式
+				if ( $_GET != {} ) {
+					if ( $_GET[ "dataSet" ] ){
+						formData.append( 'dataSet', $_GET[ "dataSet" ] );
+					} else {
+						formData.append( 'dataSet', "demo" );
+					}
+				} else {
+					formData.append( 'dataSet', "demo" );
+				}
 				// formData.append( 'file', _picFile ); 	// 直接把 canvas 中的数据上传，对于大图提升很多网络传输效率
 
 				// axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
@@ -153,6 +172,23 @@ function start( a_ini ){
 			clickImage:function(){ this.$refs.btnSelPic.dispatchEvent(new MouseEvent('click')); }
 		}
 	});
+}
+
+// 获取 URL 中的 GET 参数
+function getGetArgs(){
+	var url = window.document.location.href.toString(); //获取的完整url
+	var u = url.split( "?" );
+	if ( typeof( u[ 1 ] ) == "string" ){
+		u = u[ 1 ].split( "&" );
+		var get = {};
+		for( var i in u ){
+			var j = u[ i ].split( "=" );
+			get[ j[ 0 ] ] = j[ 1 ];
+		}
+		return get;
+	} else {
+		return {};
+	}
 }
 
 function toPercent( num, point = 0 ){	// 小数转百分比函数

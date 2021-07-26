@@ -152,10 +152,10 @@ function start( a_status, a_msg ){
 						this.$refs.editorObjectBoxDiv.style.width = this.picCrtWidth + "px";
 						this.$refs.editorObjectBoxDiv.style.height = this.picCrtHeight + "px";
 						
-						this._yTop = Math.round( this.picCrtHeight * 0.1 );
-						this._yBottom = Math.round( this.picCrtHeight * 0.9 );
-						this._xLeft = Math.round( this.picCrtWidth * 0.1 );
-						this._xRight = Math.round( this.picCrtWidth * 0.9 );
+						this._yTop = Math.round( this.picCrtHeight * 0.05 );
+						this._yBottom = Math.round( this.picCrtHeight * 0.95 );
+						this._xLeft = Math.round( this.picCrtWidth * 0.05 );
+						this._xRight = Math.round( this.picCrtWidth * 0.95 );
 						this.resetLinePosition();
 						
 						this.$refs.waitingBox.style.display = "none";			// 隐藏等待动画框

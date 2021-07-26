@@ -6,8 +6,13 @@ function start(){
 		},
 		mounted:function(){				// vue 实例被挂载后执行的代码
 			this.$nextTick(function(){						// 此写法是为了保证整个页面被渲染完毕后再执行需要的代码
-				// this.page = false ? "imageRecognitionDemoWithCanvas.html" : "imageRecognitionDemoWithCanvasIphone.html";
-				this.page = isPc() ? "imageRecognitionDemoWithCanvas.html" : "imageRecognitionDemoWithCanvasIphone.html";
+				// 获取 GET 参数
+				var _urlGet = window.document.location.href.toString().split("?"); //获取的完整url
+				// console.log( _urlGet );
+				var _getArgs = "";
+				if ( _urlGet.length > 1 ) _getArgs = "?" + _urlGet[ 1 ];
+				// this.page = false ? "imageRecognitionDemoWithCanvas.html" : "imageRecognitionDemoWithCanvasIphone.html";					// 测试分支代码
+				this.page = isPc() ? "imageRecognitionDemoWithCanvas.html" + _getArgs : "imageRecognitionDemoWithCanvasIphone.html" + _getArgs;
 			});
 		},
 		methods:{

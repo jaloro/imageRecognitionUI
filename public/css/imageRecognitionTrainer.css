@@ -52,7 +52,7 @@ table {	border-color: red; }
 
 .maskblock {
 	position: absolute;
-	background-color: rgba(0,0,0,0.85);
+	background-color: rgba(0,0,0,0.5);
 }
 
 .maskline {
