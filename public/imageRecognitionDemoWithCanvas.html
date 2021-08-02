@@ -24,15 +24,27 @@
 				<tr>
 					<td style="background-color: #000000;"></td>
 					<td>
-						<div id="按钮区域" style="width: 90%; text-align:right;">
+						<div id="按钮区域" style="width: 90%; text-align:right; position: relative;">
 							<!-- <label class="nes-btn" title="选择要识别的图片" @mouseover="btnMouseOver($event)" @mouseleave="btnMouseLeave($event)"> -->
 							<label class="nes-btn" title="选择要识别的图片" onMouseOut="this.className='nes-btn'" onMouseOver="this.className='nes-btn is-primary'" style="width: 120px;">
 								<span style="font-weight: 600;">Select Pic</span>
 								<input type="file" ref="btnSelPic" @change="selectImage($event)" accept="image/*,image/jpg,image/jpeg,image/gif,image/png">
 							</label><br/><br/>
 							<!-- <button type="button" class="nes-btn" title="上传图片并识别" @mouseover="btnMouseOver($event)" @mouseleave="btnMouseLeave($event)" @click="uploadImage()" style="font-weight: 600;">Upload Pic</button><br/><br/> -->
-							<button type="button" class="nes-btn" title="上传图片并识别" onMouseOut="this.className='nes-btn'" onMouseOver="this.className='nes-btn is-primary'" @click="uploadImage()" style="width: 120px; font-weight: 600;">Upload Pic</button><br/><br/>
+							<button type="button" class="nes-btn" title="上传图片并识别" onMouseOut="this.className='nes-btn'" onMouseOver="this.className='nes-btn is-primary'" @click="uploadImage()" style="width: 120px; font-weight: 600;">Recognize Pic</button><br/><br/>
 							<span style="color: #ff8800;">The picture size should not be larger than 512*512 !</span>
+							<br/><br/>
+							<!-- <div id="" style="background-color:#0ff; width: 100%; position: relative; right: 0px;"> -->
+								<div id="训练库选择框" style="background-color:#fff; position: absolute; right:0px; width:calc(60% + 8px); text-align: right;">
+									<span style="color: #0aa;">Select Data Model</span>
+									<div class="nes-select">
+										<select ref="selectDataModel" required id="dataModel_select" v-model="dataModelCategary.selectedItem" @change="dataModelSelected">
+											<option value=-1 disabled selected hidden>Default</option>
+											<option v-for="(item, index) in dataModelCategary.items" :value="index">{{item}}</option>
+										</select>
+									</div>
+								</div>
+							<!-- </div> -->
 						</div>
 						<br/><br/>
 					</td>

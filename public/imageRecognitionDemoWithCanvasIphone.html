@@ -47,17 +47,29 @@
 				</div>
 			</div>
 			<br/><br/>
-			<div id="按钮区域" style="width: 85%; text-align:right;">
+			<div id="" style="background-color: #000; width: 60%; height: 100%; float: left; display: inline;">
+				<br/><br/>
+				<div id="训练库选择框" style="background-color:#000; width:calc(80% + 8px); text-align: left;">
+					<span style="color: #0aa;">Select Data Model</span>
+					<div class="nes-select">
+						<select ref="selectDataModel" required id="dataModel_select" v-model="dataModelCategary.selectedItem" @change="dataModelSelected">
+							<option value=-1 disabled selected hidden>Default</option>
+							<option v-for="(item, index) in dataModelCategary.items" :value="index">{{item}}</option>
+						</select>
+					</div>
+				</div>
+			</div>
+			<div id="按钮区域" style="width: 30%; float: left; display: inline; text-align:right;">
 				<!-- <label class="nes-btn" title="选择要识别的图片" @mouseover="btnMouseOver($event)" @mouseleave="btnMouseLeave($event)"> -->
 				<br/><br/>
 				<!-- <span style="font-size: 60%; color: #ee8800;">The picture size should not be larger than 512*512 !</span> -->
 				<!-- <br/><br/> -->
-				<label class="nes-btn" title="选择要识别的图片" onMouseOut="this.className='nes-btn'" onMouseOver="this.className='nes-btn is-primary'" style="width: 120px;">
+				<label class="nes-btn" title="选择要识别的图片" onMouseOut="this.className='nes-btn'" onMouseOver="this.className='nes-btn is-primary'" style="width: 180px;">
 					<span style="font-weight: 600;">Select Pic</span>
 					<input type="file" ref="btnSelPic" @change="selectImage($event)" accept="image/*,image/jpg,image/jpeg,image/gif,image/png">
 				</label><br/><br/>
 				<!-- <button type="button" class="nes-btn" title="上传图片并识别" @mouseover="btnMouseOver($event)" @mouseleave="btnMouseLeave($event)" @click="uploadImage()" style="font-weight: 600;">Upload Pic</button><br/><br/> -->
-				<button type="button" class="nes-btn" title="上传图片并识别" onMouseOut="this.className='nes-btn'" onMouseOver="this.className='nes-btn is-primary'" @click="uploadImage()" style="width: 120px; font-weight: 600;">Upload Pic</button><br/><br/>
+				<button type="button" class="nes-btn" title="上传图片并识别" onMouseOut="this.className='nes-btn'" onMouseOver="this.className='nes-btn is-primary'" @click="uploadImage()" style="width: 180px; font-weight: 600;">Recognize Pic</button><br/><br/>
 				<br/><br/>
 			</div>
 			<div id="copyright" style="position: fixed; bottom: 0; width: 100%;">

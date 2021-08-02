@@ -22,6 +22,8 @@ function start( a_ini ){
 			selectedImgSrc:"",
 			picNameLabelColor:"font-size: 70%; color: #00ffff;",
 			selectedImgName:"- No image were seleted -",
+			dataModelCategary: { selectedItem:-1, items:[ "demo", "crawfish" ] },
+			dataModelCategrayName: "demo",		// 数据模型库名称
 			picOrgWidth:1,				// 图像原始宽度
 			picOrgHeight:1,				// 图像原始高度
 			picScale:1,
@@ -101,15 +103,16 @@ function start( a_ini ){
 				
 				var formData = new FormData();
 				formData.append( 'file', _blobData, Date.now() + "-" + Math.round( Math.random() * 10000 ) + ".jpg" );		// Date.now().toLocaleString() - 带逗号格式
-				if ( $_GET != {} ) {
-					if ( $_GET[ "dataSet" ] ){
-						formData.append( 'dataSet', $_GET[ "dataSet" ] );
-					} else {
-						formData.append( 'dataSet', "demo" );
-					}
-				} else {
-					formData.append( 'dataSet', "demo" );
-				}
+				// if ( $_GET != {} ) {
+				// 	if ( $_GET[ "dataSet" ] ){
+				// 		formData.append( 'dataset', $_GET[ "dataSet" ] );
+				// 	} else {
+				// 		formData.append( 'dataset', "demo" );
+				// 	}
+				// } else {
+				// 	formData.append( 'dataset', "demo" );
+				// }
+				formData.append( 'dataset', this.dataModelCategrayName );
 				// formData.append( 'file', _picFile ); 	// 直接把 canvas 中的数据上传，对于大图提升很多网络传输效率
 
 				// axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
@@ -127,6 +130,10 @@ function start( a_ini ){
 					}
 				);
 				
+			},
+			dataModelSelected:function(){					// 选择数据模型库
+				this.dataModelCategrayName = ( this.dataModelCategary.selectedItem >= 0 ) ? this.dataModelCategary.items[ this.dataModelCategary.selectedItem ] : "demo";
+				// console.log( this.dataModelCategary.selectedItem, this.dataModelCategary.items[ this.dataModelCategary.selectedItem ], this.dataModelCategrayName );
 			},
 			parseRes:function( a_resData = null ){			// 解析返回值 (画框)
 				if ( !a_resData ) {
