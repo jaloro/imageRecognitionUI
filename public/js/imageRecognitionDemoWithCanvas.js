@@ -111,7 +111,7 @@ function start( a_ini ){
 				
 				var formData = new FormData();
 				formData.append( 'file', _blobData, Date.now() + "-" + Math.round( Math.random() * 10000 ) + ".jpg" );		// Date.now().toLocaleString() - 带逗号格式
-				// if ( $_GET != {} ) {
+				// if ( $_GET != {} ) {						// 通过 url get 参数获取的参数来设定 dataset 值
 				// 	if ( $_GET[ "dataSet" ] ){
 				// 		formData.append( 'dataset', $_GET[ "dataSet" ] );
 				// 	} else {
@@ -122,7 +122,9 @@ function start( a_ini ){
 				// 	console.log("2: dataset = demo");
 				// 	formData.append( 'dataset', "demo" );
 				// }
-				formData.append( 'dataset', this.dataModelCategrayName );
+				console.log( this.dataModelCategrayName );
+				formData.append( 'dataSet', this.dataModelCategrayName );	// 通过 select 空间获取的参数来设定 dataset 值
+				// formData.append( 'dataSet', "crawfish" );
 				// formData.append( 'file', _picFile ); 	// 直接把 canvas 中的数据上传，对于大图提升很多网络传输效率
 
 				// axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
@@ -142,8 +144,9 @@ function start( a_ini ){
 				
 			},
 			dataModelSelected:function(){					// 选择数据模型库
-				this.dataModelCategrayName = ( this.dataModelCategary.selectedItem >= 0 ) ? this.dataModelCategary.items[ this.dataModelCategary.selectedItem ] : "demo";
-				// console.log( this.dataModelCategary.selectedItem, this.dataModelCategary.items[ this.dataModelCategary.selectedItem ], this.dataModelCategrayName );
+				// this.dataModelCategrayName = ( this.dataModelCategary.selectedItem >= 0 ) ? this.dataModelCategary.items[ this.dataModelCategary.selectedItem ] : "demo";
+				this.dataModelCategrayName = ( this.dataModelCategary.selectedItem >= 0 ) ? ( this.dataModelCategary.selectedItem == 0 ? "demo" : "crawfish" ) : "demo";
+				console.log( this.dataModelCategary.selectedItem, this.dataModelCategary.items[ this.dataModelCategary.selectedItem ], this.dataModelCategrayName );
 			},
 			parseRes:function( a_resData = null ){			// 解析返回值 (画框)
 				if ( !a_resData ) {

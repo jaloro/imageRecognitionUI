@@ -112,7 +112,7 @@ function start( a_ini ){
 				// } else {
 				// 	formData.append( 'dataset', "demo" );
 				// }
-				formData.append( 'dataset', this.dataModelCategrayName );
+				formData.append( 'dataSet', this.dataModelCategrayName );
 				// formData.append( 'file', _picFile ); 	// 直接把 canvas 中的数据上传，对于大图提升很多网络传输效率
 
 				// axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
